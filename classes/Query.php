@@ -19,9 +19,17 @@ class Query
         }
     }
 
-    public function select($table, $tableCol, $tableColValue){
+    public function prepare($sql){
+        return $this->connexion->prepare($sql);
+    }
 
-            $requete = $this->connexion->prepare("SELECT * FROM $table WHERE $tableCol='$tableColValue'");
+    public function select($table, $tableCol = null, $tableColValue = null){
+        if($tableCol === null && $tableColValue === null) {
+            $sql = "SELECT * FROM $table";
+        } else {
+            $sql = "SELECT * FROM $table WHERE $tableCol='$tableColValue'";
+        }
+            $requete = $this->connexion->prepare($sql);
             $requete->execute();
             $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
             return $resultat;
