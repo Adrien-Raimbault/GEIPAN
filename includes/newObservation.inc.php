@@ -1,5 +1,6 @@
 <?php
-dump($_POST);
+// Conditionner l'acces à la page si visiteur sans session initiée
+// l'inviter à s'enregister et/ou se connecter ou à simplement saisir son adresse email (création d'une $_SESSION['login] = true  + un compte GUEST)
 
 if(isset($_SESSION['login'])) {
     include 'frmNewObservation.php';
