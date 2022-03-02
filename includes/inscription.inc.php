@@ -89,25 +89,22 @@ if (isset($_POST['inscription'])) {
             $userPassword = password_hash($userPassword, PASSWORD_DEFAULT);
             
             $conn = new Query();
-            // $requete = $conn->connexion->prepare("SELECT * FROM users WHERE userMail='$userMail'");
-            // $requete->execute();
-            // $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
-           
             if(count($conn->select("users","userMail","$userMail")) !== 0) {
                 echo "<p>Votre adresse est déjà enregistrée dans la base de données</p><p>Connectez-vous <a href=\"index.php?page=login\">ICI</a></p>";
             }
 
             else {
-                $query = $conn->connexion->prepare("
+                $query = $conn->prepare("
                 INSERT INTO users(userName, userFirstname, userMail, userPassword, userAvatar, id_role)
                 VALUES (:name, :firstname, :email, :password, :avatar, :role)
                 ");
-                $userRole= 1;
+                $userRole= 2;
                 $query->bindParam(':name', $userName, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':firstname', $userFirstname, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':email', $userMail, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':password', $userPassword, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':avatar', $fileNameFinal, PDO::PARAM_STR_CHAR);
+                // $fileNameFinal est en chemin absolu, à changer en relatif
                 $query->bindParam(':role', $userRole);
                 $query->execute();
 
