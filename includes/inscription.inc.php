@@ -30,7 +30,7 @@ if (isset($_POST['inscription'])) {
         array_push($error, "Veuillez saisir la vérification de votre mot de passe");
 
     if ($userPassword !== $userPasswordV)
-        array_push($erreur, "Vos mots de passe ne correspondent pas");
+        array_push($error, "Vos mots de passe ne correspondent pas");
 
     if (isset($_FILES['userAvatar']) && $_FILES['userAvatar']['error'] == 0) {
         $fileName = $_FILES['userAvatar']['name'];
@@ -86,15 +86,15 @@ if (isset($_POST['inscription'])) {
     if (count($error) === 0) {
 
         try {
-            $conn = new Query();
             $userPassword = password_hash($userPassword, PASSWORD_DEFAULT);
             
-            $requete = $conn->connexion->prepare("SELECT * FROM users WHERE userMail='$userMail'");
-            $requete->execute();
-            $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
+            $conn = new Query();
+            // $requete = $conn->connexion->prepare("SELECT * FROM users WHERE userMail='$userMail'");
+            // $requete->execute();
+            // $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
            
-            if(count($resultat) !== 0) {
-                echo "<p>Votre adresse est déjà enregistrée dans la base de données</p>";
+            if(count($conn->select("users","userMail","$userMail")) !== 0) {
+                echo "<p>Votre adresse est déjà enregistrée dans la base de données</p><p>Connectez-vous <a href=\"index.php?page=login\">ICI</a></p>";
             }
 
             else {
