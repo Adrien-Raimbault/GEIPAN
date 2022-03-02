@@ -1,0 +1,11 @@
+ADMIN
+    email : test@test.fr
+    password: test
+
+GUEST
+    email : invite@test.fr
+    password: test
+
+REGISTERED
+    email: regis@test.fr
+    password: test

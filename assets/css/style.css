@@ -10,3 +10,15 @@ body {
 a {
     text-decoration: none;
 }
+
+nav ul {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+    margin: 1rem;
+}
+h1 {
+    font-size: 1.2rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
