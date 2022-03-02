@@ -32,51 +32,56 @@ if (isset($_POST['inscription'])) {
     if ($userPassword !== $userPasswordV)
         array_push($erreur, "Vos mots de passe ne correspondent pas");
 
-    // if (isset($_FILES['userAvatar']) && $_FILES['userAvatar']['error'] == 0) {
-    //     $fileName = $_FILES['userAvatar']['name'];
-    //     $fileType = $_FILES['userAvatar']['type'];
-    //     $fileTmpName = $_FILES['userAvatar']['tmp_name'];
+    if (isset($_FILES['userAvatar']) && $_FILES['userAvatar']['error'] == 0) {
+        $fileName = $_FILES['userAvatar']['name'];
+        $fileType = $_FILES['userAvatar']['type'];
+        $fileTmpName = $_FILES['userAvatar']['tmp_name'];
         
-    //     $tableauTypes = array("image/jpeg", "image/jpg", "image/png", "image/gif");
+        $tableauTypes = array("image/jpeg", "image/jpg", "image/png", "image/gif");
 
-    //     if (in_array($fileType, $tableauTypes)) {
-    //         $path = getcwd() . "/avatars/";
-    //         $date = date('Ymdhis');
-    //         $fileName = $date . $fileName;
-    //         $fileNameFinal = $path . $fileName;
-    //         $fileNameFinal = str_replace("\\", "/", $fileNameFinal);
-    //     }
-    //     else {
-    //         array_push($erreur, "Erreur type MIME");
-    //     }
-    // } else {
-    //     $fileUploadError = $_FILES['userAvatar']['error'];
-    //     switch($fileUploadError) {
-    //         case 1 :
-    //             $fileUploadErrorMessage = "La taille du fichier téléchargé excède la valeur de upload_max_filesize.";
-    //         break;
-    //         case 2 :
-    //             $fileUploadErrorMessage = "La taille du fichier téléchargé excède la valeur de MAX_FILE_SIZE, qui a été spécifiée dans le formulaire HTML.";
-    //         break;
-    //         case 3 :
-    //             $fileUploadErrorMessage = "Le fichier n'a été que partiellement téléchargé.";
-    //         break;
-    //         case 4 :
-    //             $fileUploadErrorMessage = "Aucun fichier n'a été téléchargé.";
-    //         break;
-    //         case 6 :
-    //             $fileUploadErrorMessage = "Un dossier temporaire est manquant.";
-    //         break;
-    //         case 7 :
-    //             $fileUploadErrorMessage = "Échec de l'écriture du fichier sur le disque.";
-    //         break;
-    //         case 8 :
-    //             $fileUploadErrorMessage = "Une extension PHP a arrêté l'envoi de fichier.";
-    //         break;
-    //     }
+        if (in_array($fileType, $tableauTypes)) {
+            $path = getcwd() . "/avatars/";
+            $date = date('Ymdhis');
+            $fileName = $date . $fileName;
+            $fileNameFinal = $path . $fileName;
+            $fileNameFinal = str_replace("\\", "/", $fileNameFinal);
 
-    //     array_push($error, "Erreur upload : " . $fileUploadErrorMessage);
-    // }
+            $moveFile = true;
+        }
+        else {
+            array_push($erreur, "Erreur type MIME");
+        }
+    } else if ($_FILES['userAvatar']['error'] == 4){
+            $path = getcwd() . "/avatars/";
+            $fileName = 'avatar_default.png';
+            $fileNameFinal = $path . $fileName;
+            $fileNameFinal = str_replace("\\", "/", $fileNameFinal);
+            $moveFile = false;
+    } else {
+        $fileUploadError = $_FILES['userAvatar']['error'];
+        switch($fileUploadError) {
+            case 1 :
+                $fileUploadErrorMessage = "La taille du fichier téléchargé excède la valeur de upload_max_filesize.";
+            break;
+            case 2 :
+                $fileUploadErrorMessage = "La taille du fichier téléchargé excède la valeur de MAX_FILE_SIZE, qui a été spécifiée dans le formulaire HTML.";
+            break;
+            case 3 :
+                $fileUploadErrorMessage = "Le fichier n'a été que partiellement téléchargé.";
+            break;
+            case 6 :
+                $fileUploadErrorMessage = "Un dossier temporaire est manquant.";
+            break;
+            case 7 :
+                $fileUploadErrorMessage = "Échec de l'écriture du fichier sur le disque.";
+            break;
+            case 8 :
+                $fileUploadErrorMessage = "Une extension PHP a arrêté l'envoi de fichier.";
+            break;
+        }
+
+        array_push($error, "Erreur upload : " . $fileUploadErrorMessage);
+    }
 
     if (count($error) === 0) {
 
@@ -94,18 +99,19 @@ if (isset($_POST['inscription'])) {
 
             else {
                 $query = $conn->connexion->prepare("
-                INSERT INTO users(userName, userFirstname, userMail, userPassword, id_role)
-                VALUES (:name, :firstname, :email, :password, :role)
+                INSERT INTO users(userName, userFirstname, userMail, userPassword, userAvatar, id_role)
+                VALUES (:name, :firstname, :email, :password, :avatar, :role)
                 ");
                 $userRole= 1;
                 $query->bindParam(':name', $userName, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':firstname', $userFirstname, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':email', $userMail, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':password', $userPassword, PDO::PARAM_STR_CHAR);
+                $query->bindParam(':avatar', $fileNameFinal, PDO::PARAM_STR_CHAR);
                 $query->bindParam(':role', $userRole);
                 $query->execute();
 
-                // move_uploaded_file($fileTmpName, $path . $fileName);
+                if($moveFile) move_uploaded_file($fileTmpName, $path . $fileName);
                 
                 echo "<p>Insertions effectuées</p>";
             }
