@@ -6,7 +6,7 @@ class Query
     private string $userName = "root";
     private string $database = "geipan";
     private string $userPassword = "root";
-    public object $connexion;
+    private object $connexion;
 
     public function __construct()
     {
@@ -17,6 +17,14 @@ class Query
         catch(PDOException $e){
             die("Erreur :  " . $e->getMessage());
         }
+    }
+
+    public function select($table, $tableCol, $tableColValue){
+
+            $requete = $this->connexion->prepare("SELECT * FROM $table WHERE $tableCol='$tableColValue'");
+            $requete->execute();
+            $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
+            return $resultat;
     }
 
     public function __destruct()
