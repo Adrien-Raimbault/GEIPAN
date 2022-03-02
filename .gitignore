@@ -182,3 +182,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,visualstudiocode,osx,windows,linux
 /vendor
+_datas/departements.csv
